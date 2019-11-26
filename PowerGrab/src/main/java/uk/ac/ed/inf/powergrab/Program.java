@@ -50,7 +50,7 @@ public class Program {
     public static double run(GeoJson geojson, Position initPos, long seed, String droneType, String fileName) {
         GameMap map = geojson.getMap();
         double totalCoins = 0.0;
-        for (Station station : map.stations()) {
+        for (Station station : map.stations) {
             double coins = station.getCoins();
             if (coins > 0.0) totalCoins += coins;
         }

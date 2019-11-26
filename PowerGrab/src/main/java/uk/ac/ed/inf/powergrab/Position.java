@@ -1,11 +1,13 @@
 package uk.ac.ed.inf.powergrab;
 
+import uk.ac.ed.inf.powergrab.search.TspSolver;
+
 import java.lang.Math;
 
 /**
  * Stores a geographical position.
  */
-public class Position {
+public class Position implements TspSolver.Node<Position> {
     public final double latitude, longitude;
 
     public Position(double latitude, double longitude) {

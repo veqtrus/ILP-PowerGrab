@@ -68,7 +68,7 @@ public class GeoJson {
             double longitude = coordinates.getDouble(0);
             double latitude = coordinates.getDouble(1);
             Position position = new Position(latitude, longitude);
-            map.addStation(new Station(id, position, coins, power));
+            map.stations.add(new Station(id, position, coins, power));
         }
         return map;
     }

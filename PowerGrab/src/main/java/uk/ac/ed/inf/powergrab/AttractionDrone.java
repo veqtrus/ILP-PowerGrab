@@ -37,7 +37,7 @@ public class AttractionDrone extends Drone {
     private double score(Position pos) {
         double result = 0.0;
         boolean onlyNegative = onlyNegative();
-        for (Station station : map.stations()) {
+        for (Station station : map.stations) {
             double coef = 0.0;
             double coins = station.getCoins();
             if (coins > 0.0) {
@@ -54,7 +54,7 @@ public class AttractionDrone extends Drone {
     }
 
     private boolean onlyNegative() {
-        for (Station station : map.stations()) {
+        for (Station station : map.stations) {
             if (station.getCoins() > 0.0)
                 return false;
         }

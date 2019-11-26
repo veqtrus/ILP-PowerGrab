@@ -2,7 +2,6 @@ package uk.ac.ed.inf.powergrab.search;
 
 import org.paulgeorgiou.collections.TreePriorityDeque;
 
-import java.util.Collection;
 import java.util.TreeMap;
 
 /**
@@ -27,7 +26,7 @@ public class HeuristicSearch<N extends HeuristicSearch.Node<N>> {
          *
          * @return collection of nodes
          */
-        Collection<? extends T> childNodes();
+        Iterable<? extends T> childNodes();
 
         /**
          * Returns {@code true} if this node is a goal. Search finishes when
