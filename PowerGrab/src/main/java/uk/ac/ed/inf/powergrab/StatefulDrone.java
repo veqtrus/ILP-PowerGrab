@@ -50,11 +50,12 @@ public class StatefulDrone extends Drone {
             Position next = position.nextPosition(direction);
             if (!next.inPlayArea()) continue;
             double score = 0.0;
+            Station nearestStation = map.nearestStation(next);
             for (Station station : map.stations) {
                 double multiplier = 0.0;
                 double distance = station.position.distance(next);
                 if (station.getCoins() < 0.0 || station.getPower() < 0.0)
-                    multiplier = distance < GameRules.closeDistance ? 1e10 : 1.0;
+                    multiplier = distance < GameRules.closeDistance && nearestStation.equals(station) ? 1e10 : 1.0;
                 score += multiplier / (1e-10 + distance);
             }
             if (score < bestScore) {
