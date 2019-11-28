@@ -60,28 +60,16 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
             // Use the comparator to compare elements if provided,
             // otherwise use their natural ordering.
             int compare = comparator == null
-                ? ((Comparable<? super E>) value).compareTo(o.value)
-                : comparator.compare(value, o.value);
+                    ? ((Comparable<? super E>) value).compareTo(o.value)
+                    : comparator.compare(value, o.value);
             // If two elements are equal, compare their indices
             return compare == 0 ? Long.compare(index, o.index) : compare;
         }
     }
 
-    @SuppressWarnings("unchecked")
     private class ObjectEntry extends Entry {
-        final Object obj;
-        private final boolean compareIndices;
-
-        ObjectEntry(Object obj) {
-            super(null, Long.MIN_VALUE);
-            this.obj = obj;
-            this.compareIndices = false;
-        }
-
-        ObjectEntry(Object obj, long index) {
-            super(null, index);
-            this.obj = obj;
-            this.compareIndices = true;
+        ObjectEntry(E value) {
+            super(value, Long.MIN_VALUE);
         }
 
         @Override
@@ -89,11 +77,9 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
         public int compareTo(Entry o) {
             // Use the comparator to compare elements if provided,
             // otherwise use their natural ordering.
-            int compare = comparator == null
-                ? ((Comparable<? super E>) obj).compareTo(o.value)
-                : comparator.compare((E) obj, o.value);
-            // If two elements are equal, compare their indices (if we consider them)
-            return compareIndices && compare == 0 ? Long.compare(index, o.index) : compare;
+            return comparator == null
+                    ? ((Comparable<? super E>) value).compareTo(o.value)
+                    : comparator.compare(value, o.value);
         }
     }
 
@@ -489,9 +475,10 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
      * @throws NullPointerException if the specified element is null
      */
     @Override
+    @SuppressWarnings("unchecked")
     public boolean removeFirstOccurrence(Object o) {
         if (o == null) throw new NullPointerException();
-        Entry entryToRemove = tree.ceiling(new ObjectEntry(o, Long.MIN_VALUE));
+        Entry entryToRemove = tree.ceiling(new Entry((E) o, Long.MIN_VALUE));
         return entryToRemove != null && tree.remove(entryToRemove);
     }
 
@@ -507,9 +494,10 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
      * @throws NullPointerException if the specified element is null
      */
     @Override
+    @SuppressWarnings("unchecked")
     public boolean removeLastOccurrence(Object o) {
         if (o == null) throw new NullPointerException();
-        Entry entryToRemove = tree.floor(new ObjectEntry(o, Long.MAX_VALUE));
+        Entry entryToRemove = tree.floor(new Entry((E) o, Long.MAX_VALUE));
         return entryToRemove != null && tree.remove(entryToRemove);
     }
 
@@ -624,9 +612,10 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
      * @throws NullPointerException if the specified element is null
      */
     @Override
+    @SuppressWarnings("unchecked")
     public boolean contains(Object o) {
         if (o == null) throw new NullPointerException();
-        return tree.contains(new ObjectEntry(o));
+        return tree.contains(new ObjectEntry((E) o));
     }
 
     /**
