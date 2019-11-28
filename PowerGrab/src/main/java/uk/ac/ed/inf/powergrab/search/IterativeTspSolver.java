@@ -1,6 +1,9 @@
 package uk.ac.ed.inf.powergrab.search;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class IterativeTspSolver<N extends TspSolver.Node<N>> implements TspSolver<N> {
     private int maxIterations;
@@ -39,9 +42,9 @@ public class IterativeTspSolver<N extends TspSolver.Node<N>> implements TspSolve
     }
 
     public List<N> solveNearestNeighbours(Collection<? extends N> nodes) {
-        List<N> result = new ArrayList<N>(nodes.size());
+        ArrayList<N> result = new ArrayList<N>(nodes.size());
         if (nodes.isEmpty()) return result;
-        List<N> available = new LinkedList<N>(nodes);
+        ArrayList<N> available = new ArrayList<N>(nodes);
         N previous;
         if (initialNode == null) {
             previous = available.remove(0);
@@ -67,34 +70,21 @@ public class IterativeTspSolver<N extends TspSolver.Node<N>> implements TspSolve
     }
 
     public List<N> applyHeuristics(Collection<? extends N> nodes) {
-        List<N> result = new ArrayList<N>(nodes);
-        int iter = 0;
-        while (iter < maxIterations) {
-            boolean found = false;
-            for (; iter < maxIterations; iter++) {
-                List<N> move = findOneMove(result);
-                if (move == null)
-                    break;
-                result = move;
-                found = true;
-            }
-            for (; iter < maxIterations; iter++) {
-                List<N> swap = find2Opt(result);
-                if (swap == null)
-                    break;
-                result = swap;
-                found = true;
-            }
-            if (!found)
+        ArrayList<N> result = new ArrayList<N>(nodes);
+        if (result.size() < 2) return result;
+        for (int iter = 0; iter < maxIterations; iter++) {
+            ArrayList<N> rearrangement = find3Opt(result);
+            if (rearrangement == null)
                 break;
+            result = rearrangement;
         }
         return result;
     }
 
-    private double totalDistance(List<? extends N> nodes) {
+    private double totalDistance(ArrayList<N> nodes) {
         if (nodes.isEmpty()) return 0.0;
-        double result = initialNode == null ? 0.0 : initialNode.distance(nodes.get(0));
-        N previous = null;
+        double result = 0.0;
+        N previous = initialNode;
         for (N current : nodes) {
             if (previous != null)
                 result += previous.distance(current);
@@ -103,56 +93,41 @@ public class IterativeTspSolver<N extends TspSolver.Node<N>> implements TspSolve
         return result;
     }
 
-    private List<N> moveOne(List<? extends N> nodes, int source, int destination) {
-        List<N> result = new ArrayList<N>(nodes);
-        N node = result.remove(source);
-        result.add(destination, node);
-        return result;
-    }
-
-    private List<N> findOneMove(List<? extends N> nodes) {
+    private ArrayList<N> find3Opt(ArrayList<N> nodes) {
         double minLength = totalDistance(nodes);
-        List<N> result = null;
-        for (int source = 0, sz = nodes.size(); source < sz; source++) {
-            for (int destination = 0; destination < sz; destination++) {
-                if (source == destination) continue;
-                List<N> move = moveOne(nodes, source, destination);
-                double length = totalDistance(move);
-                if (length < minLength) {
-                    result = move;
-                    minLength = length;
+        ArrayList<N> result = null;
+        for (int i = 0, sz = nodes.size(); i < sz; i++) {
+            for (int j = i + 1; j < sz; j++) {
+                for (int k = j + 1; k <= sz; k++) {
+                    for (int swap = 0; swap < 2; swap++) {
+                        for (int revA = 0; revA < 2; revA++) {
+                            for (int revB = 0; revB < 2; revB++) {
+                                if (swap + revA + revB == 0) continue;
+                                ArrayList<N> rearrangement = rearrange(nodes, i, j, k, swap != 0, revA != 0, revB != 0);
+                                double length = totalDistance(rearrangement);
+                                if (length < minLength) {
+                                    result = rearrangement;
+                                    minLength = length;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
         return result;
     }
 
-    private List<N> swap2Opt(List<? extends N> nodes, int m, int n) {
-        int sz = nodes.size();
-        List<N> result = new ArrayList<N>(sz);
-        for (int i = 0; i < m; i++)
-            result.add(nodes.get(i));
-        for (int i = n; i >= m; i--)
-            result.add(nodes.get(i));
-        for (int i = n + 1; i < sz; i++)
-            result.add(nodes.get(i));
-        return result;
-    }
-
-    private List<N> find2Opt(List<? extends N> nodes) {
-        final double curLength = totalDistance(nodes);
-        double minLength = curLength;
-        List<N> result = null;
-        for (int m = 0, sz = nodes.size(); m < sz; m++) {
-            for (int n = m + 1; n < sz; n++) {
-                List<N> swap = swap2Opt(nodes, m, n);
-                double length = totalDistance(swap);
-                if (length < minLength) {
-                    result = swap;
-                    minLength = length;
-                }
-            }
+    private ArrayList<N> rearrange(ArrayList<N> nodes, int i, int j, int k, boolean swap, boolean revA, boolean revB) {
+        ArrayList<N> rearrangement = new ArrayList<N>(nodes);
+        if (swap) {
+            Collections.reverse(rearrangement.subList(i, k));
+            j = k - j + i;
+            revA = !revA;
+            revB = !revB;
         }
-        return result;
+        if (revA) Collections.reverse(rearrangement.subList(i, j));
+        if (revB) Collections.reverse(rearrangement.subList(j, k));
+        return rearrangement;
     }
 }
