@@ -68,33 +68,18 @@ public class IterativeTspSolver<N extends TspSolver.Node<N>> implements TspSolve
 
     public List<N> applyHeuristics(Collection<? extends N> nodes) {
         List<N> result = new ArrayList<N>(nodes);
-        int iter = 0;
-        while (iter < maxIterations) {
-            boolean found = false;
-            for (; iter < maxIterations; iter++) {
-                List<N> move = findOneMove(result);
-                if (move == null)
-                    break;
-                result = move;
-                found = true;
-            }
-            for (; iter < maxIterations; iter++) {
-                List<N> swap = find2Opt(result);
-                if (swap == null)
-                    break;
-                result = swap;
-                found = true;
-            }
-            if (!found)
-                break;
+        for (int iter = 0; iter < maxIterations; iter++) {
+            List<N> swap = find3Opt(result);
+            if (swap == null) break;
+            result = swap;
         }
         return result;
     }
 
     private double totalDistance(List<? extends N> nodes) {
         if (nodes.isEmpty()) return 0.0;
-        double result = initialNode == null ? 0.0 : initialNode.distance(nodes.get(0));
-        N previous = null;
+        double result = 0.0;
+        N previous = initialNode;
         for (N current : nodes) {
             if (previous != null)
                 result += previous.distance(current);
@@ -103,53 +88,28 @@ public class IterativeTspSolver<N extends TspSolver.Node<N>> implements TspSolve
         return result;
     }
 
-    private List<N> moveOne(List<? extends N> nodes, int source, int destination) {
-        List<N> result = new ArrayList<N>(nodes);
-        N node = result.remove(source);
-        result.add(destination, node);
-        return result;
-    }
-
-    private List<N> findOneMove(List<? extends N> nodes) {
+    private List<N> find3Opt(List<? extends N> nodes) {
         double minLength = totalDistance(nodes);
         List<N> result = null;
-        for (int source = 0, sz = nodes.size(); source < sz; source++) {
-            for (int destination = 0; destination < sz; destination++) {
-                if (source == destination) continue;
-                List<N> move = moveOne(nodes, source, destination);
-                double length = totalDistance(move);
-                if (length < minLength) {
-                    result = move;
-                    minLength = length;
-                }
-            }
-        }
-        return result;
-    }
-
-    private List<N> swap2Opt(List<? extends N> nodes, int m, int n) {
-        int sz = nodes.size();
-        List<N> result = new ArrayList<N>(sz);
-        for (int i = 0; i < m; i++)
-            result.add(nodes.get(i));
-        for (int i = n; i >= m; i--)
-            result.add(nodes.get(i));
-        for (int i = n + 1; i < sz; i++)
-            result.add(nodes.get(i));
-        return result;
-    }
-
-    private List<N> find2Opt(List<? extends N> nodes) {
-        final double curLength = totalDistance(nodes);
-        double minLength = curLength;
-        List<N> result = null;
-        for (int m = 0, sz = nodes.size(); m < sz; m++) {
-            for (int n = m + 1; n < sz; n++) {
-                List<N> swap = swap2Opt(nodes, m, n);
-                double length = totalDistance(swap);
-                if (length < minLength) {
-                    result = swap;
-                    minLength = length;
+        for (int i = 0, sz = nodes.size(); i < sz; i++) {
+            for (int j = i + 1; j < sz; j++) {
+                for (int k = j + 1; k <= sz; k++) {
+                    for (int swapAB = 0; swapAB < 2; swapAB++) {
+                        for (int swapA = 0; swapA < 2; swapA++) {
+                            for (int swapB = 0; swapB < 2; swapB++) {
+                                if (swapAB + swapA + swapB == 0) continue;
+                                List<N> swap = new ArrayList<N>(nodes);
+                                if (swapAB != 0) Collections.reverse(swap.subList(i, k));
+                                if (swapA != 0) Collections.reverse(swap.subList(i, j));
+                                if (swapB != 0) Collections.reverse(swap.subList(j, k));
+                                double length = totalDistance(swap);
+                                if (length < minLength) {
+                                    result = swap;
+                                    minLength = length;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
