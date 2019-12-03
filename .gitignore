@@ -25,6 +25,7 @@ hs_err_pid*
 # IntelliJ IDEA
 .idea/
 *.iml
+target/
 
 # PowerGrab output
 PowerGrab/*.txt
