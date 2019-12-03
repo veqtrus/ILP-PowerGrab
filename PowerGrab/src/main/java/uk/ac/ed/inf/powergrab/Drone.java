@@ -68,9 +68,9 @@ public abstract class Drone {
         }
         position = position.nextPosition(direction);
         power -= GameRules.powerConsumedPerMove;
-        Station nearest = map.nearestStation(position);
-        if (nearest.position.isClose(position))
-            nearest.connect(this);
+        Station closeStation = map.closeStation(position);
+        if (closeStation != null)
+            closeStation.connect(this);
     }
 
     /**

@@ -1,7 +1,5 @@
 package uk.ac.ed.inf.powergrab;
 
-import java.lang.Math;
-
 public enum Direction {
     N(0), NNE(1), NE(2), ENE(3),
     E(4), ESE(5), SE(6), SSE(7),

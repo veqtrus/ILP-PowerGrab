@@ -121,7 +121,7 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
      */
     public TreePriorityDeque() {
         this.comparator = null;
-        this.tree = new TreeSet<Entry>();
+        this.tree = new TreeSet<>();
     }
 
     /**
@@ -134,7 +134,7 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
      */
     public TreePriorityDeque(Comparator<? super E> comparator) {
         this.comparator = comparator;
-        this.tree = new TreeSet<Entry>();
+        this.tree = new TreeSet<>();
     }
 
     /**
@@ -163,7 +163,7 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
             this.index = tpq.index;
         } else {
             this.comparator = null;
-            this.tree = new TreeSet<Entry>();
+            this.tree = new TreeSet<>();
             addAll(c);
         }
     }
@@ -194,7 +194,7 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
             this.index = tpq.index;
         } else {
             this.comparator = comparator;
-            this.tree = new TreeSet<Entry>();
+            this.tree = new TreeSet<>();
             addAll(c);
         }
     }

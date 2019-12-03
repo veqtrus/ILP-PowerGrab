@@ -11,7 +11,7 @@ import java.util.TreeMap;
  *
  * @param <N> the type of nodes
  */
-public class HeuristicSearch<N extends HeuristicSearch.Node<N>> {
+public class HeuristicSearchSolver<N extends HeuristicSearchSolver.Node<N>> implements Solver<N, N> {
     /**
      * The interface all nodes have to implement for providing child nodes
      * and goal checking. Nodes also have to be {@link Comparable}, with
@@ -22,9 +22,9 @@ public class HeuristicSearch<N extends HeuristicSearch.Node<N>> {
      */
     public interface Node<T extends Node<T>> extends Comparable<T> {
         /**
-         * Returns a collection of nodes that can be visited from this node.
+         * Returns the nodes that can be visited from this node.
          *
-         * @return collection of nodes
+         * @return iterable of nodes
          */
         Iterable<? extends T> childNodes();
 
@@ -38,7 +38,7 @@ public class HeuristicSearch<N extends HeuristicSearch.Node<N>> {
 
         /**
          * Returns {@code true} if this node is equivalent to the parameter
-         * {@code p}. If an equivalent node has already been explored, this
+         * {@code o}. If an equivalent node has already been explored, this
          * node will only be explored if it has lower cost.
          *
          * @return {@code true} if this node is equivalent to the parameter
@@ -52,7 +52,7 @@ public class HeuristicSearch<N extends HeuristicSearch.Node<N>> {
      * Creates a {@code HeuristicSearch} instance with unbounded frontier
      * and explored sets.
      */
-    public HeuristicSearch() {
+    public HeuristicSearchSolver() {
         maxExploredSize = maxFrontierSize = Integer.MAX_VALUE;
     }
 
@@ -60,7 +60,7 @@ public class HeuristicSearch<N extends HeuristicSearch.Node<N>> {
      * Creates a {@code HeuristicSearch} instance with frontier and explored
      * sets being bounded to {@code maxQueueSizes} elements.
      */
-    public HeuristicSearch(int maxQueueSizes) {
+    public HeuristicSearchSolver(int maxQueueSizes) {
         setMaxExploredSize(maxQueueSizes);
         setMaxFrontierSize(maxQueueSizes);
     }
@@ -98,10 +98,10 @@ public class HeuristicSearch<N extends HeuristicSearch.Node<N>> {
      * @param first the first node to search
      * @return the solution or {@code null} if not found
      */
-    public N search(N first) {
+    public N solve(N first) {
         // for the explored set consider equivalent nodes to be equal
-        TreeMap<N, N> explored = new TreeMap<N, N>((n1, n2) -> n1.equivalent(n2) ? 0 : n1.compareTo(n2));
-        TreePriorityDeque<N> frontier = new TreePriorityDeque<N>();
+        TreeMap<N, N> explored = new TreeMap<>((n1, n2) -> n1.equivalent(n2) ? 0 : n1.compareTo(n2));
+        TreePriorityDeque<N> frontier = new TreePriorityDeque<>();
         frontier.setMaxSize(maxFrontierSize); // limit the size of the frontier set
         frontier.add(first);
         while (!frontier.isEmpty()) {

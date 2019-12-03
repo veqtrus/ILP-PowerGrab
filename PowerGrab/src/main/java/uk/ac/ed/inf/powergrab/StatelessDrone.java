@@ -2,11 +2,21 @@ package uk.ac.ed.inf.powergrab;
 
 import java.util.*;
 
+/**
+ * A {@link Drone} implementation which is memoryless, with limited look-ahead.
+ */
 public class StatelessDrone extends Drone {
+    /**
+     * Creates a {@code StatelessDrone} instance.
+     */
     public StatelessDrone(Position position, GameMap map, double coins, double power) {
         super(position, map, coins, power);
     }
 
+    /**
+     * Implements a {@link Comparator} which compares {@link Direction}s
+     * based on the coins than will be transferred after the move.
+     */
     private static class ReachableStationsComparator implements Comparator<Direction> {
         private final Map<Direction, Station> reachableStations;
 
@@ -16,28 +26,29 @@ public class StatelessDrone extends Drone {
 
         public int compare(Direction d1, Direction d2) {
             Station s1 = reachableStations.get(d1), s2 = reachableStations.get(d2);
-            double score1 = 0.0, score2 = 0.0;
+            double coins1 = 0.0, coins2 = 0.0;
             if (s1 != null)
-                score1 = score(s1);
+                coins1 = s1.getCoins();
             if (s2 != null)
-                score2 = score(s2);
-            return Double.compare(score1, score2);
-        }
-
-        private static double score(Station station) {
-            return station.getCoins() + station.getPower();
+                coins2 = s2.getCoins();
+            return Double.compare(coins1, coins2);
         }
     }
 
+    /**
+     * Returns the best direction according to the amount of coins
+     * that can be transferred, or a random one in the case of a tie.
+     *
+     * @return the direction this drone chose to move next
+     */
     public Direction getDirection() {
-        Map<Direction, Station> reachableStations = new HashMap<Direction, Station>();
-        ArrayList<Direction> dirs = new ArrayList<Direction>();
+        HashMap<Direction, Station> reachableStations = new HashMap<>();
+        ArrayList<Direction> dirs = new ArrayList<>();
         for (Direction dir : Direction.values()) {
             Position next = getPosition().nextPosition(dir);
             if (next.inPlayArea()) {
+                reachableStations.put(dir, map.closeStation(next));
                 dirs.add(dir);
-                Station nearestStation = map.nearestStation(next);
-                reachableStations.put(dir, nearestStation.position.isClose(next) ? nearestStation : null);
             }
         }
         Collections.shuffle(dirs, random);

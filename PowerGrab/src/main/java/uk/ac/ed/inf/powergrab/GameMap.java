@@ -14,14 +14,14 @@ public class GameMap {
      * Creates an empty map.
      */
     public GameMap() {
-        this.stations = new ArrayList<Station>();
+        this.stations = new ArrayList<>();
     }
 
     /**
      * Creates a map and copies the stations from the given map.
      */
     public GameMap(GameMap map) {
-        this.stations = new ArrayList<Station>(map.stations.size());
+        this.stations = new ArrayList<>(map.stations.size());
         for (Station station : map.stations)
             this.stations.add(new Station(station));
     }
@@ -43,5 +43,20 @@ public class GameMap {
             }
         }
         return result;
+    }
+
+    /**
+     * Returns the {@link Station} in this map whose position is closest
+     * to the given {@code position}, and is close enough for resource transfer
+     * to occur, as defined in {@link GameRules}.
+     * Returns {@code null} if no such station is found.
+     *
+     * @return station close to {@code position} or {@code null}
+     */
+    public Station closeStation(Position position) {
+        Station nearest = nearestStation(position);
+        if (nearest != null && nearest.position.distance(position) < GameRules.closeDistance)
+            return nearest;
+        return null;
     }
 }

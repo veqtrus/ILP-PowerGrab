@@ -40,7 +40,7 @@ public class Station {
      * connect and transfer coins and power.
      */
     public void connect(Drone drone) {
-        if (!drone.getPosition().isClose(position)) return;
+        if (drone.getPosition().distance(position) >= GameRules.closeDistance) return;
         double droneCoins = drone.getCoins(), dronePower = drone.getPower();
         drone.addCoins(coins);
         drone.addPower(power);

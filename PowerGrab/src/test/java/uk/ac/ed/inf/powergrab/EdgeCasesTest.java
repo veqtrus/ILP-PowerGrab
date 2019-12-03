@@ -17,8 +17,10 @@ public class EdgeCasesTest {
 
     @Test
     public void testSurroundedByNegatives() {
+        final String fileName = "surrounded.geojson";
+        if (!Files.exists(Paths.get(fileName))) return;
         Position initPos = new Position(55.944425, -3.188396);
-        long seed = 5678;
-        Program.run(getMap("surrounded.geojson"), initPos, seed, "stateful", "surrounded");
+        GeoJson geoJson = getMap(fileName);
+        Program.run(geoJson, initPos, 5678, "stateful", "surrounded");
     }
 }

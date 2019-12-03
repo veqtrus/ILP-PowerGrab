@@ -50,7 +50,7 @@ public class Simulation {
      * @return a list of moves
      */
     public List<Move> runSimulation() {
-        List<Move> result = new ArrayList<Move>(maxMoves);
+        List<Move> result = new ArrayList<>(maxMoves);
         for (int moves = 0; moves < maxMoves && drone.getPower() >= GameRules.powerConsumedPerMove; moves++) {
             Position before, after;
             before = drone.getPosition();

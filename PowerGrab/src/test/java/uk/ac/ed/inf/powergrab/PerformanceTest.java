@@ -2,12 +2,13 @@ package uk.ac.ed.inf.powergrab;
 
 import org.junit.Test;
 
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Map;
 
 public class PerformanceTest {
     public void testPerformance(String droneType) {
@@ -15,23 +16,25 @@ public class PerformanceTest {
         LocalDate lastDate = LocalDate.of(2020, 12, 30);
         Position initPos = new Position(55.944425, -3.188396);
         long seed = 5678;
-        HashMap<LocalDate, Double[]> scores = new HashMap<LocalDate, Double[]>();
+        Map<LocalDate, double[]> scores = new HashMap<>();
         for (; date.compareTo(lastDate) <= 0; date = date.plusDays(1)) {
             Instant start = Instant.now();
             double score = Program.run(date, initPos, seed, droneType, true);
             Duration duration = Duration.between(start, Instant.now());
             double seconds = duration.getSeconds() + duration.getNano() * 1e-9;
-            scores.put(date, new Double[] { score, seconds });
-            System.out.printf("Performance on %s: %.1f%% %.3fs\n", date, score * 100.0, seconds);
+            scores.put(date, new double[] { score, seconds });
+            System.out.printf("Performance on %s: %.1f%% %.3fs", date, score * 100.0, seconds);
+            System.out.println();
         }
-        try {
-            FileWriter writer = new FileWriter("performance-" + droneType + ".csv");
-            for (LocalDate key : scores.keySet()) {
-                Double[] score = scores.get(key);
-                writer.write(key.toString() + "," + score[0] + "," + score[1] + "\r\n");
+        try (PrintWriter writer = new PrintWriter("performance-" + droneType + ".csv")) {
+            for (Map.Entry<LocalDate, double[]> entry : scores.entrySet()) {
+                double[] score = entry.getValue();
+                writer.printf("%s,%f,%f", entry.getKey(), score[0], score[1]);
+                writer.println();
             }
-            writer.close();
-        } catch (IOException e) {}
+        } catch (IOException e) {
+            System.err.println("Could not save performance log.");
+        }
     }
 
     @Test
@@ -42,10 +45,5 @@ public class PerformanceTest {
     @Test
     public void testStatefulPerformance() {
         testPerformance("stateful");
-    }
-
-    @Test
-    public void testAttractionPerformance() {
-        testPerformance("attraction");
     }
 }

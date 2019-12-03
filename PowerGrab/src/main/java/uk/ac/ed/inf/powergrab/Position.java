@@ -51,17 +51,6 @@ public class Position implements TspSolver.Node<Position> {
     }
 
     /**
-     * Returns {@code true} if this position is close to the one given as
-     * parameter, as defined in {@link GameRules}.
-     *
-     * @see GameRules
-     * @return {@code true} if this position is close to the parameter
-     */
-    public boolean isClose(Position position) {
-        return distance(position) < GameRules.closeDistance;
-    }
-
-    /**
      * Represents this position as a {@link String}
      * in the format "latitude,longitude".
      *
