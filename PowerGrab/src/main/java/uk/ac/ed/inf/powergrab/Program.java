@@ -11,26 +11,78 @@ package uk.ac.ed.inf.powergrab;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.time.LocalDate;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 
-public class Program {
+public class Program implements Runnable {
     private static final double INIT_COINS = 0.0, INIT_POWER = 250.0;
     private static final int MAX_MOVES = 250;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
+    private final LocalDate firstDate, lastDate;
+    private final Position initialPosition;
+    private final long seed;
+    private final String droneType;
+    private final Path localDirectory;
+    private final boolean writeLog, writeStats;
+
     public static void main(String[] args) {
         if (args.length < 7) {
             System.err.println("Too few arguments!");
+            System.out.println("Usage: powergrab <day> <month> <year> <latitude> <longitude> <drone type> \\");
+            System.out.println("\t[-to <date>] [-dir <path>] [-nolog] [-stats]");
             return;
         }
-        LocalDate date = LocalDate.parse(args[2] + "-" + args[1] + "-" + args[0]);
-        Position initPos = new Position(Double.parseDouble(args[3]), Double.parseDouble(args[4]));
-        System.out.println("Date: " + date.toString() + ", Position: " + initPos.toString());
-        double score = run(date, initPos, Long.parseLong(args[5]), args[6], true);
-        System.out.printf("Finished with score: %.1f%%", score * 100.0);
-        System.out.println();
+        Program program = new Program(Arrays.asList(args));
+        program.run();
+    }
+
+    public Program(List<String> args) {
+        firstDate = LocalDate.parse(args.get(2) + "-" + args.get(1) + "-" + args.get(0));
+        initialPosition = new Position(Double.parseDouble(args.get(3)), Double.parseDouble(args.get(4)));
+        seed = Long.parseLong(args.get(5));
+        droneType = args.get(6);
+        int index;
+        if ((index = args.indexOf("-to")) >= 0)
+            lastDate = LocalDate.parse(args.get(index + 1), DATE_FORMAT);
+        else
+            lastDate = this.firstDate;
+        if ((index = args.indexOf("-dir")) >= 0)
+            localDirectory = Paths.get(args.get(index + 1));
+        else
+            localDirectory = null;
+        writeLog = !args.contains("-nolog");
+        writeStats = args.contains("-stats");
+    }
+
+    @Override
+    public void run() {
+        Map<LocalDate, double[]> stats = new HashMap<>();
+        for (LocalDate date = firstDate; date.compareTo(lastDate) <= 0; date = date.plusDays(1)) {
+            System.out.printf("Drone: %s, Date: %s, Position: %s", droneType, date, initialPosition);
+            System.out.println();
+            Instant start = Instant.now();
+            double score = run(date);
+            Duration duration = Duration.between(start, Instant.now());
+            double seconds = duration.getSeconds() + duration.getNano() * 1e-9;
+            stats.put(date, new double[] { score, seconds });
+            System.out.printf("Finished after %.3fs with score: %.1f%%", seconds, score * 100.0);
+            System.out.println();
+        }
+        if (writeStats) {
+            try (PrintWriter writer = new PrintWriter("performance-" + droneType + ".csv")) {
+                for (Map.Entry<LocalDate, double[]> entry : stats.entrySet()) {
+                    double[] values = entry.getValue();
+                    writer.printf("%s,%f,%f", entry.getKey(), values[0], values[1]);
+                    writer.println();
+                }
+            } catch (IOException e) {
+                System.err.println("Could not save statistics.");
+            }
+        }
     }
 
     /**
@@ -38,18 +90,27 @@ public class Program {
      *
      * @return the drone score
      */
-    public static double run(LocalDate date, Position initPos, long seed, String droneType, boolean writeLog) {
-        String url = String.format(
-            "http://homepages.inf.ed.ac.uk/stg/powergrab/%04d/%02d/%02d/powergrabmap.geojson",
-            date.getYear(), date.getMonthValue(), date.getDayOfMonth());
-        GeoJson geojson;
+    public double run(LocalDate date) {
+        GeoJson geoJson;
         try {
-            geojson = new GeoJson(new URL(url));
+            if (localDirectory == null) {
+                String url = String.format(
+                        "http://homepages.inf.ed.ac.uk/stg/powergrab/%04d/%02d/%02d/powergrabmap.geojson",
+                        date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+                geoJson = new GeoJson(new URL(url));
+            } else {
+                Path file = Paths.get(localDirectory.toString(),
+                        String.format("%04d", date.getYear()),
+                        String.format("%02d", date.getMonthValue()),
+                        String.format("%02d", date.getDayOfMonth()),
+                        "powergrabmap.geojson");
+                geoJson = new GeoJson(file);
+            }
         } catch (IOException e) {
-            System.err.println("Failed downloading map!");
+            System.err.println("Failed loading map!");
             return -1.0;
         }
-        return run(geojson, initPos, seed, droneType, writeLog ? date.format(DATE_FORMAT) : null);
+        return run(geoJson, writeLog ? date.format(DATE_FORMAT) : null);
     }
 
     /**
@@ -57,7 +118,7 @@ public class Program {
      *
      * @return the drone score
      */
-    public static double run(GeoJson geoJson, Position initPos, long seed, String droneType, String fileSuffix) {
+    public double run(GeoJson geoJson, String fileSuffix) {
         GameMap map = geoJson.getMap();
         double totalCoins = 0.0;
         for (Station station : map.stations) {
@@ -67,10 +128,10 @@ public class Program {
         Drone drone;
         switch (droneType) {
             case "stateless":
-                drone = new StatelessDrone(initPos, map, INIT_COINS, INIT_POWER);
+                drone = new StatelessDrone(initialPosition, map, INIT_COINS, INIT_POWER);
                 break;
             case "stateful":
-                drone = new StatefulDrone(initPos, map, INIT_COINS, INIT_POWER, MAX_MOVES);
+                drone = new StatefulDrone(initialPosition, map, INIT_COINS, INIT_POWER, MAX_MOVES);
                 break;
             default:
                 System.err.println("Unknown drone type!");

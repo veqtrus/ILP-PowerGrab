@@ -12,6 +12,8 @@ import org.json.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,8 +26,8 @@ public class GeoJson {
     /**
      * Creates a {@link GeoJson} object from from another.
      */
-    public GeoJson(GeoJson geojson) {
-        this(geojson.featureCollection);
+    public GeoJson(GeoJson geoJson) {
+        this(geoJson.featureCollection);
     }
 
     /**
@@ -54,6 +56,15 @@ public class GeoJson {
             builder.append(scanner.next());
         scanner.close();
         featureCollection = new JSONObject(builder.toString());
+    }
+
+    /**
+     * Creates a {@link GeoJson} object from the map loaded from {@code file}.
+     *
+     * @throws IOException if an I/O exception occurs while loading the map
+     */
+    public GeoJson(Path file) throws IOException {
+        this(new String(Files.readAllBytes(file)));
     }
 
     /**
