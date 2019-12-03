@@ -1,5 +1,12 @@
-package uk.ac.ed.inf.powergrab;
+/*=================================================================
+Copyright 2019 Pavlos Georgiou
 
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at <https://mozilla.org/MPL/2.0/>.
+=================================================================*/
+
+package uk.ac.ed.inf.powergrab;
 
 import java.util.ArrayList;
 import java.util.List;
