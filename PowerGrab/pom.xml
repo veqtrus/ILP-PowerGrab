@@ -20,6 +20,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
+                        <index>true</index>
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>uk.ac.ed.inf.powergrab.Program</mainClass>
@@ -39,7 +40,8 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>RELEASE</version>
+            <version>4.9</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
