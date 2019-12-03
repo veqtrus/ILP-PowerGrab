@@ -1,10 +1,7 @@
-javadoc: index.html
+javadoc: web/index.html
 
-index.html:
-	javadoc -sourcepath ../../src/main/java/ -d ./ -subpackages uk.ac.ed.inf.powergrab:org.paulgeorgiou -private -doctitle PowerGrab -windowtitle "PowerGrab documentation"
+web/index.html:
+	javadoc -sourcepath ../../src/main/java/ -d ./web/ -subpackages uk.ac.ed.inf.powergrab:org.paulgeorgiou -private -doctitle PowerGrab -windowtitle "PowerGrab documentation"
 
 clean:
-	cp ./Makefile ../MakefileJavadoc
-	rm -r *
-	cp ../MakefileJavadoc ./Makefile
-	rm ../MakefileJavadoc
+	rm -r ./web/*
