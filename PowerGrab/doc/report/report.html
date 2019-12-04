@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ilp-report</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body><article>
+<spaN&gt;Copyright &copy; 2019 Pavlos Georgiou</spaN&gt;
+<h1>Informatics Large Practical<br/>Report</h1>
+<p style="text-align: center; font-size: 1.6em; margin-bottom: 4em;">Student: s1713772<br/>Autumn 2019</p>
+
+<h2>Software architecture description</h2>
+
+
+
+<h2>Class documentation</h2>
+
+<p><em>Package</em> <code>org.paulgeorgiou.collections</code></p>
+
+<h3>Class TreePriorityDeque&lt;E&gt;</h3>
+<code>
+  extends java.util.AbstractQueue&lt;E&gt;<br/>
+  implements java.util.Deque&lt;E&gt;, java.io.Serializable, java.lang.Cloneable
+</code>
+<p>A priority double-ended queue based on a TreeSet.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>private java.util.Comparator&lt;? super E&gt; comparator</dt>
+  <dd>Comparator for comparing the elements in this queue</dd>
+  <dt>private long index</dt>
+  <dd>The index to be used for the next entry</dd>
+  <dt>private int maxSize</dt>
+  <dd>The maximum size of this queue</dd>
+  <dt>private java.util.TreeSet&lt;TreePriorityDeque.Entry&gt; tree</dt>
+  <dd>The TreeSet backend of this queue</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>TreePriorityDeque()</dt>
+  <dd>Creates a TreePriorityQueue that orders its elements according to their natural ordering.</dd>
+  <dt>TreePriorityDeque(java.util.Collection&lt;? extends E&gt; c)</dt>
+  <dd>Creates a TreePriorityQueue containing the elements in the specified collection.</dd>
+  <dt>TreePriorityDeque(java.util.Collection&lt;? extends E&gt; c, java.util.Comparator&lt;? super E&gt; comparator)</dt>
+  <dd>Creates a TreePriorityQueue that orders its elements according to the specified comparator, containing the elements in the specified collection.</dd>
+  <dt>TreePriorityDeque(java.util.Comparator&lt;? super E&gt; comparator)</dt>
+  <dd>Creates a TreePriorityQueue that orders its elements according to the specified comparator.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>private long getIndex()</dt>
+  <dd>Returns the current index and increments it for use by the next call.</dd>
+  <dt>int getMaxSize()</dt>
+  <dd>Retuns the maximum size of this queue.</dd>
+  <dt>void setMaxSize(int maxSize)</dt>
+  <dd>Set the maximum size of this priority queue.</dd>
+  <dt>private void trim()</dt>
+  <dd>Remove the greatest elements of the priority queue such that its size is no greater than the maximum size specified.</dd>
+  <dt>void trim(int maxSize)</dt>
+  <dd>Remove the greatest elements of the priority queue such that its size is no greater than the maximum size specified.</dd>
+</dl>
+<p>Additionally this class has the methods of the implemented interfaces (Deque, Queue, Cloneable).</p>
+
+<hr/><p><em>Package</em> <code>uk.ac.ed.inf.powergrab.search</code></p>
+
+<h3>Interface HeuristicSearchSolver.Node&lt;T&gt;</h3>
+<code>extends java.lang.Comparable&lt;T&gt;</code>
+<p>The interface all nodes have to implement for providing child nodes and goal checking. Nodes also have to be Comparable, with least nodes considered the best.</p>
+<h4>Methods</h4>
+<dl>
+  <dt>java.lang.Iterable&lt;? extends T&gt; childNodes()</dt>
+  <dd>Returns the nodes that can be visited from this node.</dd>
+  <dt>default boolean equivalent(T o)</dt>
+  <dd>Returns true if this node is equivalent to the parameter o.</dd>
+  <dt>boolean isGoal()</dt>
+  <dd>Returns true if this node is a goal.</dd>
+</dl>
+<p>Additionally this interface has the methods of the extended interfaces (Comparable).</p>
+
+<h3>Interface Solver&lt;P,S&gt;</h3>
+<p>Interface for a problem solver &mdash; provides a solution of type S to a problem of type P.</p>
+<h4>Methods</h4>
+<dl>
+  <dt>S solve(P problem)</dt>
+  <dd>Returns a solution to the problem.</dd>
+</dl>
+
+<h3>Interface TspSolver&lt;N&gt;</h3>
+<code>extends Solver&lt;java.util.Collection&lt;? extends N&gt;, java.util.List&lt;N&gt;&gt;</code>
+<p>Interface for a Travelling Salesman Problem solver</p>
+<h4>Methods</h4>
+<dl>
+  <dt>N getInitialNode()</dt>
+  <dd>Returns the initial node if it has been set, null otherwise.</dd>
+  <dt>void  setInitialNode(N initialNode)</dt>
+  <dd>Sets the fixed initial node.</dd>
+  <dt>java.util.List&lt;N&gt; solve(java.util.Collection&lt;? extends N&gt; nodes)</dt>
+  <dd>Finds the shortest tour of the given nodes.</dd>
+</dl>
+
+<h3>Interface TspSolver.Node&lt;T&gt;</h3>
+<p>An interface nodes in a TSP may be required to implement to provide the distance/cost between nodes.</p>
+<h4>Methods</h4>
+<dd>
+  <dt>double distance(T other)</dt>
+  <dd>Returns the distance/cost between this node and other.</dd>
+</dd>
+
+<h3>Class HeuristicSearchSolver&lt;N&gt;</h3>
+<code>implements Solver&lt;N,N&gt;</code>
+<p>Implements a best-first search algorithm. Nodes have the responsibility of providing child nodes, cost calculation, and goal checking.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>private int maxExploredSize</dt>
+  <dd>The maximum size of the frontier set</dd>
+  <dt>private int maxFrontierSize</dt>
+  <dd>The maximum size of the explored set</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>HeuristicSearchSolver()</dt>
+  <dd>Creates a HeuristicSearch instance with unbounded frontier and explored sets.</dd>
+  <dt>HeuristicSearchSolver(int maxQueueSizes)</dt>
+  <dd>Creates a HeuristicSearch instance with frontier and explored sets being bounded to maxQueueSizes elements.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>int getMaxExploredSize()</dt>
+  <dd>Returns the maximum size of the frontier set.</dd>
+  <dt>int getMaxFrontierSize()</dt>
+  <dd>Returns the maximum size of the explored set.</dd>
+  <dt>void setMaxExploredSize(int maxExploredSize)</dt>
+  <dd>Sets the maximum size of the explored set.</dd>
+  <dt>void setMaxFrontierSize(int maxFrontierSize)</dt>
+  <dd>Sets the maximum size of the frontier set.</dd>
+  <dt>N solve(N first)</dt>
+  <dd>Runs a heuristic search. Returns the solution or null if not found.</dd>
+</dl>
+
+<h3>Class IterativeTspSolver&lt;N&gt;</h3>
+<code>implements TspSolver&lt;N&gt;</code>
+<p>A Travelling Salesman Problem solver which finds a solution using the Nearest Neighbours and 3-opt heuristics.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>private N initialNode</dt>
+  <dd>The fixed initial node</dd>
+  <dt>private int maxIterations</dt>
+  <dd>The maximum number of iterations</dd>
+  <dt>private boolean symmetric</dt>
+  <dd>Whether the TSP is symmetric, i.e. the distance/cost from A to B is the same as from B top A.</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>IterativeTspSolver()</dt>
+  <dd>Creates an IterativeTspSolver instance without a limit on iterations.</dd>
+  <dt>IterativeTspSolver(int maxIterations)</dt>
+  <dd>Creates an IterativeTspSolver instance with a limit on iterations.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>private void  addKeyNodes(java.util.ArrayList&lt;N&gt; keyNodes, java.util.ArrayList&lt;N&gt; nodes, int i, int j, int k)</dt>
+  <dd>Extracts the key nodes that will affect the total distance of the tour based on i, j, k.</dd>
+  <dt>java.util.List&lt;N&gt; applyHeuristics(java.util.Collection&lt;? extends N&gt; nodes)</dt>
+  <dd>Returns a solution found by iteratively applying the 3-opt heuristic.</dd>
+  <dt>N getInitialNode()</dt>
+  <dd>Returns the initial node if it has been set, null otherwise.</dd>
+  <dt>int getMaxIterations()</dt>
+  <dd>Returns the maximum number of iterations.</dd>
+  <dt>boolean getSymmetric()</dt>
+  <dd>Returns whether the TSP is symmetric, true by default.</dd>
+  <dt>private double  keyNodesDistance(java.util.ArrayList&lt;N&gt; keyNodes)</dt>
+  <dd>Returns the distance between the key nodes that will affect the total distance.</dd>
+  <dt>private void  rearrange(java.util.ArrayList&lt;N&gt; nodes, int i, int j, int k, boolean swap, boolean revA, boolean revB)</dt>
+  <dd>Partitions the tour according to i, j, k and reconnects it according to swap, revA, revB.</dd>
+  <dt>void  setInitialNode(N initialNode)</dt>
+  <dd>Sets the fixed initial node.</dd>
+  <dt>void  setMaxIterations(int maxIterations)</dt>
+  <dd>Sets the maximum number of iterations.</dd>
+  <dt>void  setSymmetric(boolean symmetric)</dt>
+  <dd>Sets whether the TSP is symmetric, true by default.</dd>
+  <dt>java.util.List&lt;N&gt; solve(java.util.Collection&lt;? extends N&gt; nodes)</dt>
+  <dd>First constructs a solution using the Nearest Neighbours heuristic and then iteratively applies the 3-opt heuristic.</dd>
+  <dt>java.util.List&lt;N&gt; solveNearestNeighbours(java.util.Collection&lt;? extends N&gt; nodes)</dt>
+  <dd>Returns a solution found using the Nearest Neighbours heuristic.</dd>
+  <dt>private boolean threeOpt(java.util.ArrayList&lt;N&gt; nodes)</dt>
+  <dd>Applies the 3-opt heuristic once.</dd>
+  <dt>private double  totalDistance(java.util.ArrayList&lt;N&gt; nodes)</dt>
+  <dd>Returns the total distance of the given tour.</dd>
+</dl>
+
+<hr/><p><em>Package</em> <code>uk.ac.ed.inf.powergrab</code></p>
+
+<h3>Class Drone</h3>
+<p>Base class for a drone which implements movement and resource transfer.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>private double coins</dt>
+  <dd>Amount of coins held by this drone</dd>
+  <dt>GameMap map</dt>
+  <dd>Map of the play area</dd>
+  <dt>private Position position</dt>
+  <dd>Position of this drone</dd>
+  <dt>private double power</dt>
+  <dd>Amount of power held by this drone</dd>
+  <dt>java.util.Random random</dt>
+  <dd>This drone's random number generator</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>Drone(Position position, GameMap map, double coins, double power)</dt>
+  <dd>Creates a drone.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>void  addCoins(double coins)</dt>
+  <dd>Adds coins to the resources held by this drone.</dd>
+  <dt>void addPower(double power)</dt>
+  <dd>Adds power to the resources held by this drone.</dd>
+  <dt>double getCoins()</dt>
+  <dd>Returns the amount of coins held by this drone.</dd>
+  <dt>abstract Direction getDirection()</dt>
+  <dd>Returns the direction this drone chose to move next.</dd>
+  <dt>Position getPosition()</dt>
+  <dd>Returns this drone's position.</dd>
+  <dt>double getPower()</dt>
+  <dd>Returns the amount of power held by this drone.</dd>
+  <dt>void move(Direction direction)</dt>
+  <dd>Move in the specified direction and update coins and power.</dd>
+</dl>
+
+<h3>Class GameMap</h3>
+<p>A map of the play area, contains stations.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>java.util.List&lt;Station&gt; stations</dt>
+  <dd>List of Stations in the play area.</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>GameMap()</dt>
+  <dd>Creates an empty map.</dd>
+  <dt>GameMap(GameMap map)</dt>
+  <dd>Creates a map and copies the stations from the given map.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>Station closeStation(Position position)</dt>
+  <dd>Returns the Station in this map whose position is closest to the given position, and is close enough for resource transfer to occur, as defined in GameRules.</dd>
+  <dt>Station nearestStation(Position position)</dt>
+  <dd>Returns the Station in this map whose position is closest to the given position, or null if the map is empty.</dd>
+</dl>
+
+<h3>Class GameRules</h3>
+<p>Class containing static fields about the game's rules</p>
+<h4>Fields</h4>
+<dl>
+  <dt>static double closeDistance</dt>
+  <dd>A drone within this distance to a station can connect with it.</dd>
+  <dt>static double moveDistance</dt>
+  <dd>How far a drone moves in step</dd>
+  <dt>static Rectangle  playArea</dt>
+  <dd>The area a drone can move within</dd>
+  <dt>static double powerConsumedPerMove</dt>
+  <dd>Amount of power consumed by a drone in each move</dd>
+</dl>
+
+<h3>Class GeoJson</h3>
+<p>Stores the contents of a GeoJSON file.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>private JSONObject featureCollection</dt>
+  <dd>Represents the GeoJSON file's root object.</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>GeoJson(GeoJson geoJson)</dt>
+  <dd>Creates a GeoJson object from from another.</dd>
+  <dt>GeoJson(JSONObject json)</dt>
+  <dd>Creates a GeoJson object from a map encoded in a JSONObject.</dd>
+  <dt>GeoJson(Path file)</dt>
+  <dd>Creates a GeoJson object from the map loaded from file.</dd>
+  <dt>GeoJson(String json)</dt>
+  <dd>Creates a GeoJson object from a map encoded in a json String.</dd>
+  <dt>GeoJson(URL url)</dt>
+  <dd>Creates a GeoJson object from the map downloaded from url.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>void addMoves(java.util.List&lt;Simulation.Move&gt; moves)</dt>
+  <dd>Adds a trace of a drone's moves.</dd>
+  <dt>GameMap getMap()</dt>
+  <dd>Returns a GameMap containing the stations in the GeoJSON file.</dd>
+  <dt>java.lang.String toString()</dt>
+  <dd>Encodes this GeoJSON as a String.</dd>
+</dl>
+
+<h3>Class Program</h3>
+<code>implements java.lang.Runnable</code>
+<p>The entry point of the program which launches the simulation.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>private static java.time.format.DateTimeFormatter DATE_FORMAT</dt>
+  <dd>Formats dates in the dd-MM-yyyy format.</dd>
+  <dt>private java.lang.String droneType</dt>
+  <dd>"stateless" or "stateful"</dd>
+  <dt>private java.time.LocalDate firstDate</dt>
+  <dd>The first date to run a simulation on</dd>
+  <dt>private static double INIT_COINS</dt>
+  <dd>The initial amount of coins the drone will have</dd>
+  <dt>private static double INIT_POWER</dt>
+  <dd>The initial amount of power the drone will have</dd>
+  <dt>private Position initialPosition</dt>
+  <dd>The initial position the drone will have</dd>
+  <dt>private java.time.LocalDate lastDate</dt>
+  <dd>The last date to run a simulation on</dd>
+  <dt>private java.nio.file.Path localDirectory</dt>
+  <dd>If maps should be loaded from local storage this will be the root directory.</dd>
+  <dt>private static int MAX_MOVES</dt>
+  <dd>The maximum number of moves the drone can make</dd>
+  <dt>private long seed</dt>
+  <dd>The random number generator's seed</dd>
+  <dt>private boolean writeLog</dt>
+  <dd>Whether to write the simulation log files</dd>
+  <dt>private boolean writeStats</dt>
+  <dd>Whether to write the drone's statistics</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>Program(java.util.List&lt;java.lang.String&gt; args)</dt>
+  <dd>Creates a Program instance with the given command line arguments.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>static void main(java.lang.String[] args)</dt>
+  <dd>The program's entry point</dd>
+  <dt>void run()</dt>
+  <dd>Run the program upon parsing the arguments.</dd>
+  <dt>double run(GeoJson geoJson, java.lang.String fileSuffix)</dt>
+  <dd>Runs a drone simulation on the specified map in GeoJSON format.</dd>
+  <dt>double run(java.time.LocalDate date)</dt>
+  <dd>Runs a drone simulation on the specified map of the day.</dd>
+</dl>
+
+<h3>Class Rectangle</h3>
+<p>A Rectangle specifies an area in the geographic coordinate space that is enclosed by the Rectangle object's topLeft and bottomRight positions.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>Position bottomRight</dt>
+  <dd>The bottom-right corner</dd>
+  <dt>Position topLeft</dt>
+  <dd>The top-left corner</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>Rectangle(double top, double left, double bottom, double right)</dt>
+  <dd>Creates a rectangle from the top left and bottom right coordinates.</dd>
+  <dt>Rectangle(Position topLeft, Position bottomRight)</dt>
+  <dd>Creates a rectangle from the topLeft and bottomRight positions.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>boolean pointWithin(Position position)</dt>
+  <dd>Returns true if position is inside this rectangle.</dd>
+</dl>
+
+<h3>Class Simulation</h3>
+<p>Runs a simulation of a given drone.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>private Drone drone</dt>
+  <dd>The drone to simulate</dd>
+  <dt>private int maxMoves</dt>
+  <dd>The maximum number of moves the drone can make</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+<dt>Simulation(Drone drone, int maxMoves)</dt>
+<dd>Creates a simulation.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>java.util.List&lt;Simulation.Move&gt; runSimulation()</dt>
+  <dd>Runs a simulation and returns a list of moves the drone made.</dd>
+</dl>
+
+<h3>Class Simulation.Move</h3>
+<p>Stores details about a drone's move.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>Position after</dt>
+  <dd>The drone's position after this move</dd>
+  <dt>Position before</dt>
+  <dd>The drone's position before this move</dd>
+  <dt>double coins</dt>
+  <dd>The drone's coins after this move</dd>
+  <dt>Direction direction</dt>
+  <dd>The direction in which the drone moved</dd>
+  <dt>double power</dt>
+  <dd>The drone's power after this move</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>Move(Position before, Position after, Direction direction, double coins, double power)</dt>
+  <dd>Creates a Move instance with the given information.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>java.lang.String toString()</dt>
+  <dd>Returns the String representation of this move, i.e. the fields separated by commas.</dd>
+</dl>
+
+<h3>Class StatefulDrone</h3>
+<code>extends Drone</code>
+<p>A Drone implementation which decides its path by finding:</p>
+<ol>
+  <li>the best order to visit stations;</li>
+  <li>the shortest path to visit these stations.</li>
+</ol>
+<h4>Fields</h4>
+<dl>
+  <dt>private int maxMoves</dt>
+  <dd>The maximum number of moves this drone can make</dd>
+  <dt>private java.util.Queue&lt;Direction&gt; moves</dt>
+  <dd>Queue of precomputed moves</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>StatefulDrone(Position position, GameMap map, double coins, double power, int maxMoves)</dt>
+  <dd>Creates a StatefulDrone instance.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>private Direction awayFromNegativity()</dt>
+  <dd>Returns the best direction away from negative stations.</dd>
+  <dt>Direction getDirection()</dt>
+  <dd>Returns the first move from the queue of precomputed moves, otherwise populates the queue.</dd>
+  <dt>void move(Direction direction)</dt>
+  <dd>Move in the specified direction and update coins and power.</dd>
+</dl>
+
+<h3>Class StatefulDrone.PathNode</h3>
+<code>implements HeuristicSearchSolver.Node&lt;StatefulDrone.PathNode&gt;</code>
+<p>The node in the path-finding problem, for use by the HeuristicSearchSolver.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>double coins</dt>
+  <dd>Amount of coins held by the drone at this time</dd>
+  <dt>double coinsLost</dt>
+  <dd>Amount of coins lost by the drone at this time</dd>
+  <dt>Direction direction</dt>
+  <dd>Direction in which the drone moved</dd>
+  <dt>double distance</dt>
+  <dd>Total distance travelled by the drone so far</dd>
+  <dt>GameMap map</dt>
+  <dd>The state of the play area at this point</dd>
+  <dt>int move</dt>
+  <dd>Number of moves so far</dd>
+  <dt>java.util.List&lt;Position&gt; plan</dt>
+  <dd>The plan for visiting stations</dd>
+  <dt>Position position</dt>
+  <dd>The drone's position at this time</dd>
+  <dt>double power</dt>
+  <dd>Amount of power held by the drone at this time</dd>
+  <dt>StatefulDrone.PathNode previous</dt>
+  <dd>The previous/parent node</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>PathNode(int move, Position position, double coins, double power, GameMap map, java.util.List&lt;Position&gt; plan)</dt>
+  <dd>Creates a PathNode without a previous/parent node.</dd>
+  <dt>PathNode(StatefulDrone.PathNode previous, Direction direction)</dt>
+  <dd>Creates a PathNode resulting from moving from the previous node in the specified direction.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>java.lang.Iterable&lt;StatefulDrone.PathNode&gt; childNodes()</dt>
+  <dd>Returns the nodes that can be visited from this node.</dd>
+  <dt>int compareTo(StatefulDrone.PathNode other)</dt>
+  <dd>Compares this node to the other based on the number of remaining stations to visit, the amount of coins lost, and the expected total distance to the next target.</dd>
+  <dt>boolean equivalent(StatefulDrone.PathNode o)</dt>
+  <dd>Returns true if this node is equivalent to the parameter o.</dd>
+  <dt>private double expectedDistance()</dt>
+  <dd>Returns the expected total distance to the next target, including the distance travelled so far.</dd>
+  <dt>java.util.List&lt;Direction&gt; getDirections()</dt>
+  <dd>Returns a list of directions starting from the first move.</dd>
+  <dt>boolean isGoal()</dt>
+  <dd>Returns true if this node is a goal.</dd>
+</dl>
+
+<h3>Class StatelessDrone</h3>
+<code>extends Drone</code>
+<p>A Drone implementation which is memoryless, with limited look-ahead.</p>
+<h4>Fields</h4>
+<p>Only those inherited from Drone (map, random).</p>
+<h4>Constructors</h4>
+<dl>
+  <dt>StatelessDrone(Position position, GameMap map, double coins, double power)</dt>
+  <dd>Creates a StatelessDrone instance.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>Direction getDirection()</dt>
+  <dd>Returns the best direction according to the amount of coins that can be transferred, or a random one in the case of a tie.</dd>
+</dl>
+<p>Additionally this class has the methods inherited from Drone (addCoins, addPower, getCoins, getPosition, getPower, move).</p>
+
+<h3>Class StatelessDrone.ReachableStationsComparator</h3>
+<code>implements java.util.Comparator&lt;Direction&gt;</code>
+<p>Implements a Comparator which compares Directions based on the coins than will be transferred after the move.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>private java.util.Map&lt;Direction,Station&gt; reachableStations</dt>
+  <dd>The stations that the drone would connect to if it moved in each direction.</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>ReachableStationsComparator(java.util.Map&lt;Direction,Station&gt; reachableStations)</dt>
+  <dd>Creates a ReachableStationsComparator with the given reachable stations.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>int compare(Direction d1, Direction d2)</dt>
+  <dd>Compares the two directions.</dd>
+</dl>
+
+<h3>Class Station</h3>
+<p>Represents a station in the game.</p>
+<h4>Fields</h4>
+<dl>
+  <dt>private double coins</dt>
+  <dd>Amount of coins held by this station</dd>
+  <dt>java.lang.String id</dt>
+  <dd>The station identifier</dd>
+  <dt>Position position</dt>
+  <dd>Position of this station</dd>
+  <dt>private double power</dt>
+  <dd>Amount of power held by this station</dd>
+</dl>
+<h4>Constructors</h4>
+<dl>
+  <dt>Station(Station station)</dt>
+  <dd>Creates station using the parameters of the given station.</dd>
+  <dt>Station(java.lang.String id, Position position, double coins, double power)</dt>
+  <dd>Creates a station with the given parameters.</dd>
+</dl>
+<h4>Methods</h4>
+<dl>
+  <dt>void connect(Drone drone)</dt>
+  <dd>If the drone is close to this station, connect and transfer coins and power.</dd>
+  <dt>boolean equals(java.lang.Object obj)</dt>
+  <dd>Returns true if the stations are the same object or their ids are equal.</dd>
+  <dt>double getCoins()</dt>
+  <dd>Returns the amount of coins held by this station.</dd>
+  <dt>double getPower()</dt>
+  <dd>Returns the amount of power held by this station.</dd>
+  <dt>int hashCode()</dt>
+  <dd>Returns the hashcode derived from the station id.</dd>
+  <dt>java.lang.String toString()</dt>
+  <dd>Returns information about this station in text form.</dd>
+</dl>
+
+<h2>Stateful drone strategy</h2>
+
+</article></body></html>
