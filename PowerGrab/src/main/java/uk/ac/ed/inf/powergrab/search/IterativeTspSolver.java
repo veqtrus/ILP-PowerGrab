@@ -26,14 +26,14 @@ public class IterativeTspSolver<N extends TspSolver.Node<N>> implements TspSolve
     private boolean symmetric = true;
 
     /**
-     * Creates a {@code IterativeTspSolver} instance without a limit on iterations.
+     * Creates an {@code IterativeTspSolver} instance without a limit on iterations.
      */
     public IterativeTspSolver() {
         maxIterations = Integer.MAX_VALUE;
     }
 
     /**
-     * Creates a {@code IterativeTspSolver} instance with a limit on iterations.
+     * Creates an {@code IterativeTspSolver} instance with a limit on iterations.
      */
     public IterativeTspSolver(int maxIterations) {
         setMaxIterations(maxIterations);

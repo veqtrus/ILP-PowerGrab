@@ -17,7 +17,7 @@ public class Station {
     private double coins, power;
 
     /**
-     * Creates a station.
+     * Creates a station with the given parameters.
      *
      * @throws NullPointerException if {@code id} or {@code position} is {@code null}
      */

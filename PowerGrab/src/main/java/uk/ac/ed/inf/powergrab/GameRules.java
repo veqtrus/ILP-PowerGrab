@@ -9,7 +9,7 @@ file, You can obtain one at <https://mozilla.org/MPL/2.0/>.
 package uk.ac.ed.inf.powergrab;
 
 /**
- * Class containing static fields about the games's rules
+ * Class containing static fields about the game's rules
  */
 public class GameRules {
     /**

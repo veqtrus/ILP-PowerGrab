@@ -116,6 +116,9 @@ public class StatefulDrone extends Drone {
         GameMap map;
         List<Position> plan;
 
+        /**
+         * Creates a {@code PathNode} without a previous/parent node.
+         */
         PathNode(int move, Position position, double coins, double power, GameMap map, List<Position> plan) {
             this.move = move;
             this.previous = null;
@@ -128,6 +131,10 @@ public class StatefulDrone extends Drone {
             this.plan = plan;
         }
 
+        /**
+         * Creates a {@code PathNode} resulting from moving from the
+         * {@code previous} node in the specified {@code direction}.
+         */
         PathNode(PathNode previous, Direction direction) {
             this.move = previous.move + 1;
             this.previous = previous;
@@ -141,6 +148,11 @@ public class StatefulDrone extends Drone {
             this.plan = previous.plan;
         }
 
+        /**
+         * Returns a list of directions starting from the first move.
+         *
+         * @return list of directions
+         */
         List<Direction> getDirections() {
             LinkedList<Direction> result = new LinkedList<>();
             for (PathNode node = this; node != null; node = node.previous)
@@ -201,6 +213,12 @@ public class StatefulDrone extends Drone {
             return Double.compare(expectedDistance(), other.expectedDistance());
         }
 
+        /**
+         * Returns the expected total distance to the next target,
+         * including the distance travelled so far.
+         *
+         * @return distance
+         */
         private double expectedDistance() {
             if (plan.isEmpty())
                 return distance;

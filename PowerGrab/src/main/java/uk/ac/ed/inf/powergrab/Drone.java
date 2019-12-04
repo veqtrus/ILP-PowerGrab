@@ -58,6 +58,10 @@ public abstract class Drone {
             this.coins = 0.0;
     }
 
+    /**
+     * Adds {@code power} to the resources held by this drone. If {@code power}
+     * is negative this drone will lose at most what it holds.
+     */
     public void addPower(double power) {
         this.power += power;
         if (this.power < 0.0)

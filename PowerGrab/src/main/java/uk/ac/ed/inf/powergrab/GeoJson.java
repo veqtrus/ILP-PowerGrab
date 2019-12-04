@@ -24,28 +24,28 @@ public class GeoJson {
     private final JSONObject featureCollection;
 
     /**
-     * Creates a {@link GeoJson} object from from another.
+     * Creates a {@code GeoJson} object from from another.
      */
     public GeoJson(GeoJson geoJson) {
         this(geoJson.featureCollection);
     }
 
     /**
-     * Creates a {@link GeoJson} object from a map encoded in a {@linkplain JSONObject JSON object}.
+     * Creates a {@code GeoJson} object from a map encoded in a {@linkplain JSONObject JSON object}.
      */
     public GeoJson(JSONObject json) {
         this(json.toString());
     }
 
     /**
-     * Creates a {@link GeoJson} object from a map encoded in a {@code json} {@link String}.
+     * Creates a {@code GeoJson} object from a map encoded in a {@code json} {@link String}.
      */
     public GeoJson(String json) {
         featureCollection = new JSONObject(json);
     }
 
     /**
-     * Creates a {@link GeoJson} object from the map downloaded from {@code url}.
+     * Creates a {@code GeoJson} object from the map downloaded from {@code url}.
      *
      * @throws IOException if an I/O exception occurs while downloading the map
      */
@@ -59,7 +59,7 @@ public class GeoJson {
     }
 
     /**
-     * Creates a {@link GeoJson} object from the map loaded from {@code file}.
+     * Creates a {@code GeoJson} object from the map loaded from {@code file}.
      *
      * @throws IOException if an I/O exception occurs while loading the map
      */
