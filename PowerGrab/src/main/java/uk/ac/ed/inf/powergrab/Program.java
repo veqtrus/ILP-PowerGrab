@@ -146,8 +146,14 @@ public class Program implements Runnable {
             try (PrintWriter logWriter = new PrintWriter(droneType + "-" + fileSuffix + ".txt");
                     PrintWriter mapWriter = new PrintWriter(droneType + "-" + fileSuffix + ".geojson")) {
                 mapWriter.print(geoJson);
-                for (Simulation.Move move : moves)
-                    logWriter.println(move);
+                boolean firstLine = true;
+                for (Simulation.Move move : moves) {
+                    if (firstLine)
+                        firstLine = false;
+                    else
+                        logWriter.println();
+                    logWriter.print(move);
+                }
             } catch (IOException e) {
                 System.err.println(e.toString());
                 return -1.0;
