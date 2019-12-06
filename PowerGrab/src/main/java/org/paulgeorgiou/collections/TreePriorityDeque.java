@@ -102,7 +102,7 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Creates a {@code TreePriorityQueue} that orders its elements
+     * Creates a {@code TreePriorityDeque} that orders its elements
      * according to their {@linkplain Comparable natural ordering}.
      */
     public TreePriorityDeque() {
@@ -111,7 +111,7 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Creates a {@code TreePriorityQueue} that orders its elements
+     * Creates a {@code TreePriorityDeque} that orders its elements
      * according to the specified comparator.
      *
      * @param comparator the comparator that will be used to order this
@@ -124,9 +124,9 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Creates a {@code TreePriorityQueue} containing the elements in the
+     * Creates a {@code TreePriorityDeque} containing the elements in the
      * specified collection. If the specified collection is an instance of
-     * a {@code TreePriorityQueue}, this priority queue will be ordered
+     * a {@code TreePriorityDeque}, this priority queue will be ordered
      * according to the same ordering. Otherwise, this priority queue will
      * be ordered according to the {@linkplain Comparable natural ordering}
      * of its elements.
@@ -142,7 +142,7 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
     @SuppressWarnings("unchecked")
     public TreePriorityDeque(Collection<? extends E> c) {
         if (c instanceof TreePriorityDeque<?> && c.getClass() == TreePriorityDeque.class) {
-            // c is a TreePriorityQueue and not an object which extends TreePriorityQueue
+            // c is a TreePriorityDeque and not an object which extends TreePriorityDeque
             TreePriorityDeque<? extends E> tpq = (TreePriorityDeque<? extends E>) c;
             this.tree = (TreeSet<Entry>) tpq.tree.clone();
             this.comparator = (Comparator<? super E>) tpq.comparator;
@@ -155,7 +155,7 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Creates a {@code TreePriorityQueue} that orders its elements
+     * Creates a {@code TreePriorityDeque} that orders its elements
      * according to the specified comparator, containing the elements
      * in the specified collection.
      *
@@ -173,7 +173,7 @@ public class TreePriorityDeque<E> extends AbstractQueue<E>
     @SuppressWarnings("unchecked")
     public TreePriorityDeque(Collection<? extends E> c, Comparator<? super E> comparator) {
         if (c instanceof TreePriorityDeque<?> && c.getClass() == TreePriorityDeque.class) {
-            // c is a TreePriorityQueue and not an object which extends TreePriorityQueue
+            // c is a TreePriorityDeque and not an object which extends TreePriorityDeque
             TreePriorityDeque<? extends E> tpq = (TreePriorityDeque<? extends E>) c;
             this.tree = (TreeSet<Entry>) tpq.tree.clone();
             this.comparator = comparator;

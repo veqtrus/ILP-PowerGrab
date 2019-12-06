@@ -57,7 +57,7 @@ public class HeuristicSearchSolver<N extends HeuristicSearchSolver.Node<N>> impl
     private int maxExploredSize, maxFrontierSize;
 
     /**
-     * Creates a {@code HeuristicSearch} instance with unbounded frontier
+     * Creates a {@code HeuristicSearchSolver} instance with unbounded frontier
      * and explored sets.
      */
     public HeuristicSearchSolver() {
@@ -65,7 +65,7 @@ public class HeuristicSearchSolver<N extends HeuristicSearchSolver.Node<N>> impl
     }
 
     /**
-     * Creates a {@code HeuristicSearch} instance with frontier and explored
+     * Creates a {@code HeuristicSearchSolver} instance with frontier and explored
      * sets being bounded to {@code maxQueueSizes} elements.
      */
     public HeuristicSearchSolver(int maxQueueSizes) {
