@@ -19,9 +19,9 @@
 
 <h2 id="h2-software-architecture-description">Software architecture description</h2>
 
-<p>The application uses classes to represent objects in the PowerGrab game. Hence we have the classes <code>Station</code> and <code>Drone</code>. <code>Drone</code> is an abstract class, which only implements the basic functionality of moving in a given direction and connecting to stations. It also holds a random number generator object for use by child classes. The responsibility for choosing the direction to move is delegated to child classes via the <code>getDirection()</code> method.</p>
+<p>The application uses classes to represent objects in the PowerGrab game. Hence, we have the classes <code>Station</code> and <code>Drone</code>. <code>Drone</code> is an abstract class, which only implements the basic functionality of moving in a given direction and connecting to stations. It also holds a random number generator object for use by child classes. The responsibility for choosing the direction to move is delegated to child classes via the <code>getDirection()</code> method.</p>
 
-<p>The <code>Drone</code> class is extened by two other classes, one for each drone type. It only implements the basic functionality of a drone, such as movement and resource transfer. The decision of where to move next is left to child classes through the abstract method <code>getDirection()</code>. <code>StatelessDrone</code> has no other fields and just implements <code>getDirection()</code>. <code>StatefulDrone</code> is more complicated and has its own fields. <code>HeuristicSearchSolver</code> and <code>IterativeTspSolver</code> are used by <code>StatefulDrone</code> to calculate the optimal path. Related are the interfaces <code>Solver</code> and <code>TspSolver</code>. <code>TreePriorityDeque</code> is used by <code>HeuristicSearchSolver</code>. It's a double-ended priority queue to allow removing the worst elements when the queue grows too large. <code>StatefulDrone</code> is discussed in more detail in <a href="#h2-stateful-drone-strategy">Stateful drone strategy</a>.</p>
+<p>The <code>Drone</code> class is extended by two other classes, one for each drone type. It only implements the basic functionality of a drone, such as movement and resource transfer. The decision of where to move next is left to child classes through the abstract method <code>getDirection()</code>. <code>StatelessDrone</code> has no other fields and just implements <code>getDirection()</code>. <code>StatefulDrone</code> is more complicated and has its own fields. <code>HeuristicSearchSolver</code> and <code>IterativeTspSolver</code> are used by <code>StatefulDrone</code> to calculate the optimal path. Related are the interfaces <code>Solver</code> and <code>TspSolver</code>. <code>TreePriorityDeque</code> is used by <code>HeuristicSearchSolver</code>. It's a double-ended priority queue to allow removing the worst elements when the queue grows too large. <code>StatefulDrone</code> is discussed in more detail in <a href="#h2-stateful-drone-strategy">Stateful drone strategy</a>.</p>
 
 <p>To make it easier for a drone to query the stations in the play area, the <code>GameMap</code> class stores a list of stations and provides methods for finding the nearest. The map is loaded from a <em>GeoJSON</em> file using the <code>GeoJson</code> class which can load the map from a website or the local filesystem for testing.</p>
 
@@ -66,7 +66,7 @@
   <dt>private long getIndex()</dt>
   <dd>Returns the current index and increments it for use by the next call.</dd>
   <dt>int getMaxSize()</dt>
-  <dd>Retuns the maximum size of this queue.</dd>
+  <dd>Returns the maximum size of this queue.</dd>
   <dt>void setMaxSize(int maxSize)</dt>
   <dd>Set the maximum size of this priority queue.</dd>
   <dt>private void trim()</dt>
@@ -74,7 +74,7 @@
   <dt>void trim(int maxSize)</dt>
   <dd>Remove the greatest elements of the priority queue such that its size is no greater than the maximum size specified.</dd>
 </dl>
-<p>Additionally this class has the methods of the implemented interfaces (Deque, Queue, Cloneable).</p>
+<p>Additionally, this class has the methods of the implemented interfaces (Deque, Queue, Cloneable).</p>
 
 <hr/><p><em>Package</em> <code>uk.ac.ed.inf.powergrab.search</code></p>
 
@@ -114,7 +114,7 @@
 </dl>
 
 <h3>Interface TspSolver.Node&lt;T&gt;</h3>
-<p>An interface nodes in a TSP may be required to implement to provide the distance/cost between nodes.</p>
+<p>An interface that nodes in a TSP may be required to implement to provide the distance/cost between nodes.</p>
 <h4>Methods</h4>
 <dd>
   <dt>double distance(T other)</dt>
@@ -349,10 +349,10 @@
   <dt>static void main(java.lang.String[] args)</dt>
   <dd>The program's entry point</dd>
   <dt>void run()</dt>
-  <dd>Run the program upon parsing the arguments.</dd>
-  <dt>double run(GeoJson geoJson, java.lang.String fileSuffix)</dt>
+  <dd>Runs the program upon parsing the arguments.</dd>
+  <dt>private double run(GeoJson geoJson, java.lang.String fileSuffix)</dt>
   <dd>Runs a drone simulation on the specified map in GeoJSON format.</dd>
-  <dt>double run(java.time.LocalDate date)</dt>
+  <dt>private double run(java.time.LocalDate date)</dt>
   <dd>Runs a drone simulation on the specified map of the day.</dd>
 </dl>
 
@@ -517,7 +517,7 @@
   <dt>Direction getDirection()</dt>
   <dd>Returns the best direction according to the amount of coins that can be transferred, or a random one in the case of a tie.</dd>
 </dl>
-<p>Additionally this class has the methods inherited from Drone (addCoins, addPower, getCoins, getPosition, getPower, move).</p>
+<p>Additionally, this class has the methods inherited from Drone (addCoins, addPower, getCoins, getPosition, getPower, move).</p>
 
 <h3>Class StatelessDrone.ReachableStationsComparator</h3>
 <code>implements java.util.Comparator&lt;Direction&gt;</code>
@@ -575,5 +575,31 @@
 </dl>
 
 <h2 id="h2-stateful-drone-strategy">Stateful drone strategy</h2>
+
+<p>The stateful drone precomputes all its moves to collect all the coins from the stations, and stores the directions in the <code>moves</code> queue. This happens when computing the first move and subsequent moves remove directions from the queue. When the queue becomes empty, and there are no more positive stations, the drone chooses the direction which will take it away from negative stations. This direction is computed at each step, not precomputed. The stateful drone also stores the maximum amount of moves it is allowed to make so that the precomputed moves don't exceed the limit.</p>
+
+<p>The drone precomputes its moves in two steps. It first finds the best order in which it will visit the stations and then finds the shortest path to visit them.</p>
+
+<h3>Planning station visits</h3>
+
+<p>The problem of finding the optimal order of visiting stations is similar to the Travelling Salesman Problem, with the restriction of having a fixed initial position. The total distance also doesn't include returning to the initial position.</p>
+
+<p>The distances between nodes are taken to be the straight-line distances between stations. This simplification makes calculating the distances very efficient, and is a reasonable approximation because of the small number of obstacles the drone will face.</p>
+
+<p>We find an approximate solution in two steps. We start by computing a solution using the Nearest Neighbours heuristic. We then iteratively apply the 3-opt heuristic. The maximum number of iterations is set to the number of stations to visit, however the algorithm will typically stop sooner because no further 3-opt optimisations can be made.</p>
+
+<h3>Path finding</h3>
+
+<p>To find the optimal path we use a generalised version of the A* algorithm. Instead of comparing nodes based on a cost metric, we directly compare nodes through the <code>Comparable</code> interface. The comparison is as follows:</p>
+
+<ol>
+  <li>Compare the number of stations that remain to be visited. If they differ prefer the node with the lowest.</li>
+  <li>Compare the amount of coins lost to negative stations. If they differ prefer the node with the lowest lost.</li>
+  <li>Compare the distance travelled so far added to the expected (straight-line) distance to the first target station. Prefer the lowest.</li>
+</ol>
+
+<p>The result is an algorithm which is greedy with respect to visiting as many stations as possible and minimising coin loss, but not in terms of distance. The greediness greatly reduces the number of nodes explored while still being able to find an optimal path between stations. That is, A* won't back-track to reconsider an alternative order of visiting stations. To further limit the impact of complex searches, the explored and frontier sets are limited in size, to prevent exploring a too wide range of paths. The limit has been chosen empirically (hence the need for <code>TreePriorityDeque</code>).</p>
+
+
 
 </article></body></html>
