@@ -27,23 +27,23 @@ h3 { font-size: 1.4em; }
 h4 { font-size: 1.2em; margin-bottom: 0.4em; }
 h5 { font-size: 1em; }
 
-code {
-  font-family: 'Courier New', 'Courier', 'FreeMono', monospace;
+code, dt {
+  font-family: 'Consolas', 'FreeMono', monospace;
+  font-weight: bold;
+  font-size: 0.9em;
   text-align: left;
 }
 
 a, a:visited {
-  color: #0af;
+  color: #a00;
   text-decoration: none;
 }
 a:hover, a:active, a:focus {
-  color: #05c;
+  color: #f20;
 }
 
 dl { margin: 0.4em 0; }
 dt {
-  font-family: 'Courier New', 'Courier', 'FreeMono', monospace;
-  font-size: 0.96em;
   margin-left: 4em;
   text-indent: -4em;
 }

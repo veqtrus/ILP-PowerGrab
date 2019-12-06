@@ -3,18 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <title>ilp-report</title>
+  <meta name="viewport" content="width=device-width" />
   <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 <body><article>
-<spaN&gt;Copyright &copy; 2019 Pavlos Georgiou</spaN&gt;
+<span>Copyright &copy; 2019 Pavlos Georgiou</span>
 <h1>Informatics Large Practical<br/>Report</h1>
 <p style="text-align: center; font-size: 1.6em; margin-bottom: 4em;">Student: s1713772<br/>Autumn 2019</p>
+<span style="font-style: italic;">Contents</span>
+<ol>
+  <li><a href="#h2-software-architecture-description">Software architecture description</a></li>
+  <li><a href="#h2-class-documentation">Class documentation</a></li>
+  <li><a href="#h2-stateful-drone-strategy">Stateful drone strategy</a></li>
+</ol>
 
-<h2>Software architecture description</h2>
+<h2 id="h2-software-architecture-description">Software architecture description</h2>
 
+<p>The application uses classes to represent objects in the PowerGrab game. Hence we have the classes <code>Station</code> and <code>Drone</code>. <code>Drone</code> is an abstract class, which only implements the basic functionality of moving in a given direction and connecting to stations. It also holds a random number generator object for use by child classes. The responsibility for choosing the direction to move is delegated to child classes via the <code>getDirection()</code> method.</p>
 
+<p>The <code>Drone</code> class is extened by two other classes, one for each drone type. It only implements the basic functionality of a drone, such as movement and resource transfer. The decision of where to move next is left to child classes through the abstract method <code>getDirection()</code>. <code>StatelessDrone</code> has no other fields and just implements <code>getDirection()</code>. <code>StatefulDrone</code> is more complicated and has its own fields. <code>HeuristicSearchSolver</code> and <code>IterativeTspSolver</code> are used by <code>StatefulDrone</code> to calculate the optimal path. Related are the interfaces <code>Solver</code> and <code>TspSolver</code>. <code>TreePriorityDeque</code> is used by <code>HeuristicSearchSolver</code>. It's a double-ended priority queue to allow removing the worst elements when the queue grows too large. <code>StatefulDrone</code> is discussed in more detail in <a href="#h2-stateful-drone-strategy">Stateful drone strategy</a>.</p>
 
-<h2>Class documentation</h2>
+<p>To make it easier for a drone to query the stations in the play area, the <code>GameMap</code> class stores a list of stations and provides methods for finding the nearest. The map is loaded from a <em>GeoJSON</em> file using the <code>GeoJson</code> class which can load the map from a website or the local filesystem for testing.</p>
+
+<p>The <code>GameRules</code> class stores various values related to the rules of the PowerGrab game, like the distance travelled by the drone in one move. <code>Position</code>, <code>Direction</code> and <code>Rectangle</code> represent basic geographic data types used to simulate the game.</p>
+
+<p>The simulation is carried out by the <code>Simulation</code> class which repeatedly calls the given drone's <code>getDirection()</code> and <code>move()</code> methods. It records the drone's moves in its own <code>Move</code> objects and returns a list of them. Finally, <code>Program</code> is the entry point of the application which parses the command line arguments, instantiates the chosen drone, prepares the simulation, and after it ends, writes the log files.</p>
+
+<h2 id="h2-class-documentation">Class documentation</h2>
 
 <p><em>Package</em> <code>org.paulgeorgiou.collections</code></p>
 
@@ -38,13 +53,13 @@
 <h4>Constructors</h4>
 <dl>
   <dt>TreePriorityDeque()</dt>
-  <dd>Creates a TreePriorityQueue that orders its elements according to their natural ordering.</dd>
+  <dd>Creates a TreePriorityDeque that orders its elements according to their natural ordering.</dd>
   <dt>TreePriorityDeque(java.util.Collection&lt;? extends E&gt; c)</dt>
-  <dd>Creates a TreePriorityQueue containing the elements in the specified collection.</dd>
+  <dd>Creates a TreePriorityDeque containing the elements in the specified collection.</dd>
   <dt>TreePriorityDeque(java.util.Collection&lt;? extends E&gt; c, java.util.Comparator&lt;? super E&gt; comparator)</dt>
-  <dd>Creates a TreePriorityQueue that orders its elements according to the specified comparator, containing the elements in the specified collection.</dd>
+  <dd>Creates a TreePriorityDeque that orders its elements according to the specified comparator, containing the elements in the specified collection.</dd>
   <dt>TreePriorityDeque(java.util.Comparator&lt;? super E&gt; comparator)</dt>
-  <dd>Creates a TreePriorityQueue that orders its elements according to the specified comparator.</dd>
+  <dd>Creates a TreePriorityDeque that orders its elements according to the specified comparator.</dd>
 </dl>
 <h4>Methods</h4>
 <dl>
@@ -119,9 +134,9 @@
 <h4>Constructors</h4>
 <dl>
   <dt>HeuristicSearchSolver()</dt>
-  <dd>Creates a HeuristicSearch instance with unbounded frontier and explored sets.</dd>
+  <dd>Creates a HeuristicSearchSolver instance with unbounded frontier and explored sets.</dd>
   <dt>HeuristicSearchSolver(int maxQueueSizes)</dt>
-  <dd>Creates a HeuristicSearch instance with frontier and explored sets being bounded to maxQueueSizes elements.</dd>
+  <dd>Creates a HeuristicSearchSolver instance with frontier and explored sets being bounded to maxQueueSizes elements.</dd>
 </dl>
 <h4>Methods</h4>
 <dl>
@@ -559,6 +574,6 @@
   <dd>Returns information about this station in text form.</dd>
 </dl>
 
-<h2>Stateful drone strategy</h2>
+<h2 id="h2-stateful-drone-strategy">Stateful drone strategy</h2>
 
 </article></body></html>
