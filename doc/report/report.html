@@ -330,6 +330,8 @@
   <dd>The last date to run a simulation on</dd>
   <dt>private java.nio.file.Path localDirectory</dt>
   <dd>If maps should be loaded from local storage this will be the root directory.</dd>
+  <dt>private java.nio.file.Path logDirectory </dt>
+  <dd>The directory where logs whould be written</dd>
   <dt>private static int MAX_MOVES</dt>
   <dd>The maximum number of moves the drone can make</dd>
   <dt>private long seed</dt>
@@ -586,11 +588,11 @@
 
 <p>The distances between nodes are taken to be the straight-line distances between stations. This simplification makes calculating the distances very efficient, and is a reasonable approximation because of the small number of obstacles the drone will face.</p>
 
-<p>We find an approximate solution in two steps. We start by computing a solution using the Nearest Neighbours heuristic. We then iteratively apply the 3-opt heuristic. The maximum number of iterations is set to the number of stations to visit, however the algorithm will typically stop sooner because no further 3-opt optimisations can be made.</p>
+<p>We find an approximate solution in two steps. We start by computing a solution using the Nearest Neighbours heuristic. We then iteratively apply the 3-opt heuristic. The maximum number of iterations is set to the number of stations to visit, however the algorithm will typically stop sooner because no further 3-opt optimisations can be made [1].</p>
 
 <h3>Path finding</h3>
 
-<p>To find the optimal path we use a generalised version of the A* algorithm. Instead of comparing nodes based on a cost metric, we directly compare nodes through the <code>Comparable</code> interface. The comparison is as follows:</p>
+<p>To find the optimal path we use a generalised version of the A* algorithm [2]. Instead of comparing nodes based on a cost metric, we directly compare nodes through the <code>Comparable</code> interface. The comparison is as follows:</p>
 
 <ol>
   <li>Compare the number of stations that remain to be visited. If they differ prefer the node with the lowest.</li>
@@ -600,6 +602,27 @@
 
 <p>The result is an algorithm which is greedy with respect to visiting as many stations as possible and minimising coin loss, but not in terms of distance. The greediness greatly reduces the number of nodes explored while still being able to find an optimal path between stations. That is, A* won't back-track to reconsider an alternative order of visiting stations. To further limit the impact of complex searches, the explored and frontier sets are limited in size, to prevent exploring a too wide range of paths. The limit has been chosen empirically (hence the need for <code>TreePriorityDeque</code>).</p>
 
+<hr/>
+<ol>
+  <li>"Travelling salesman problem". Wikipedia. <a href="https://en.wikipedia.org/wiki/Travelling_salesman_problem">https://en.wikipedia.org/wiki/Travelling_salesman_problem</a></li>
+  <li>"Artificial Intelligence: A Modern Approach". Russel and Norvig</li>
+</ol>
 
+<h3 style="page-break-before: always;">Comparison of stateless and stateful drone</h3>
+<p>Date: 09-09-2019</p>
+<table>
+  <tr>
+    <th>Stateless</td>
+    <th>Stateful</td>
+  </tr>
+  <tr>
+    <td>
+      <img src="img/stateless.png" />
+    </td>
+    <td>
+      <img src="img/stateful.png" />
+    </td>
+  </tr>
+</table>
 
 </article></body></html>

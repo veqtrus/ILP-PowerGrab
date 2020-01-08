@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 public class TestOutput {
     @Test
     public void makeTestOutput() {
-        IntStream.rangeClosed(1, 12).parallel().mapToObj(Integer::toString).forEach(i -> {
+        IntStream.rangeClosed(1, 12).mapToObj(Integer::toString).forEach(i -> {
             Program.main(new String[] {
                     i, i, "2019", "55.944425", "-3.188396", "5678", "stateless", "-o", "out" });
             Program.main(new String[] {
@@ -22,7 +22,7 @@ public class TestOutput {
             Program.main(new String[] {
                     "01", "01", i, "55.944425", "-3.188396", "5678", "stateless", "-nolog", "-to", "31-12-" + i });
             Program.main(new String[] {
-                    "01", "01", i, "55.944425", "-3.188396", "5678", "stateful", "-nolog", "-to", "31-12-" + i });
+                    "01", "01", i, "55.944425", "-3.188396", "5678", "stateful", "-stats", "-nolog", "-to", "31-12-" + i });
         });*/
     }
 }

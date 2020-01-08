@@ -169,10 +169,12 @@ public class StatefulDrone extends Drone {
             for (Direction direction : Direction.values()) {
                 PathNode next = new PathNode(this, direction);
                 if (!next.position.inPlayArea()) continue;
+                Station closeStation = map.closeStation(next.position);
+                // while the drone doesn't have to lose all these coins, it's better to avoid it
+                if (closeStation != null && closeStation.getCoins() < 0.0)
+                    next.coinsLost -= closeStation.getCoins();
                 Drone drone = new StatefulDrone(position, new GameMap(map), coins, power, maxMoves - move);
                 drone.move(direction);
-                Position dronePosition = drone.getPosition();
-                Station closeStation = map.closeStation(dronePosition);
                 if (closeStation != null) {
                     next.map = drone.map;
                     if (plan.contains(closeStation.position)) {
@@ -182,9 +184,6 @@ public class StatefulDrone extends Drone {
                 }
                 next.coins = drone.getCoins();
                 next.power = drone.getPower();
-                double deltaCoins = next.coins - coins;
-                if (deltaCoins < 0.0)
-                    next.coinsLost -= deltaCoins;
                 result.add(next);
             }
             return result;
